@@ -11,7 +11,9 @@
 	html, body { background: #faf9f6; color: #111214; font-family: Inter, -apple-system, "Segoe UI", sans-serif; }
 	.wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
 	.site-header { background: #fff; border-bottom: 1px solid rgba(0,0,0,0.05); }
-	.site-header .header-inner { max-width: 1152px; margin: 0 auto; height: 56px; display: flex; align-items: center; padding: 0 20px; }
+	.site-header .header-inner { max-width: 1152px; margin: 0 auto; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+	.alerts-btn { background: #20c45a; color: #fff; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 999px; text-decoration: none; white-space: nowrap; }
+	.alerts-btn:hover { background: #1aa851; }
 	.site-header a { display: flex; align-items: center; }
 	.site-header img { height: 28px; width: auto; display: block; }
 	.banner { margin-top: 24px; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; gap: 14px; }
@@ -44,8 +46,12 @@
 	.card .status.ok { color: #16a34a; }
 	.card .status.slow { color: #ca8a04; }
 	.card .status.down { color: #dc2626; }
-	.card .meta { margin-top: 6px; font-size: 13px; color: #6b7280; display: flex; flex-wrap: wrap; gap: 4px 16px; }
-	.card .meta b { color: #111214; font-weight: 700; }
+	.stats { display: flex; gap: 36px; margin-top: 16px; flex-wrap: wrap; }
+	.stat .stat-num { display: block; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: #111214; }
+	.stat .stat-num.ok { color: #16a34a; }
+	.stat .stat-num.slow { color: #ca8a04; }
+	.stat .stat-num.down { color: #dc2626; }
+	.stat .stat-label { display: block; font-size: 12px; color: #6b7280; margin-top: 3px; }
 	.bars { display: grid; grid-template-columns: repeat(90, minmax(0, 1fr)); grid-auto-rows: 28px; gap: 2px; margin-top: 14px; }
 	.bars i { height: 28px; border-radius: 2px; display: block; min-width: 0; }
 	.bars i.ok { background: #20c45a; opacity: 0.85; }
@@ -71,14 +77,25 @@
 	.incident .when { margin-top: 4px; font-size: 13px; color: #6b7280; }
 	.incident .desc { margin-top: 6px; font-size: 14px; color: #111214; }
 	.empty { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 20px; font-size: 14px; color: #6b7280; }
+	.day { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 16px 20px; margin-bottom: 10px; }
+	.day .day-head { display: flex; align-items: center; gap: 8px; }
+	.day .day-dot { width: 10px; height: 10px; border-radius: 999px; flex-shrink: 0; }
+	.day .day-dot.ok { background: #20c45a; }
+	.day .day-dot.down { background: #ef4444; }
+	.day .day-date { font-size: 14px; font-weight: 700; }
+	.day .day-ok { margin-top: 6px; font-size: 13px; color: #6b7280; }
+	.day .day-inc { margin-top: 6px; font-size: 13px; color: #111214; line-height: 1.5; }
+	.day .day-inc + .day-inc { margin-top: 4px; }
+	.day .day-inc .when { color: #6b7280; }
 	@media (max-width: 560px) {
 		.wrap { padding: 28px 16px 48px; }
 		.banner h1 { font-size: 18px; }
+		.stat .stat-num { font-size: 24px; }
 	}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="header-inner"><a href="https://www.tiendly.lat/" aria-label="Tiendly"><img src="tiendly-isotipo.svg" alt="Tiendly"></a></div></header>
+<header class="site-header"><div class="header-inner"><a href="https://www.tiendly.lat/" aria-label="Tiendly"><img src="tiendly-isotipo.svg" alt="Tiendly"></a><a class="alerts-btn" href="https://chat.whatsapp.com/DuA8flp7oee2cVj5x2Pz6E" target="_blank" rel="noopener">Recibir avisos</a></div></header>
 <div class="wrap">
 
 	<div id="banner" class="banner ok">
@@ -104,6 +121,9 @@
 
 	<h2>Incidentes</h2>
 	<div id="incidents"></div>
+
+	<h2>Historial</h2>
+	<div id="history"></div>
 </div>
 
 <script>
@@ -190,7 +210,7 @@
 			var level = svcLevel(st);
 			var label = level === 'ok' ? 'Operativo' : level === 'slow' ? 'Lento' : 'Caído';
 			var ms = (st.response_ms == null) ? '—' : st.response_ms + ' ms';
-			var up = (uptime[s.key] == null) ? '—' : uptime[s.key].toFixed(1) + '%';
+			var up = (uptime[s.key] == null) ? '—' : uptime[s.key].toFixed(2) + '%';
 			var hist = history[s.key] || [];
 			var bars = '';
 			var total = 90;
@@ -203,13 +223,60 @@
 			html += '<div class="card">'
 				+ '<div class="row"><span class="name">' + esc(s.label) + '</span>'
 				+ '<span class="status ' + level + '">' + label + '</span></div>'
-				+ '<div class="meta"><span>Respuesta: <b>' + esc(ms) + '</b></span>'
-				+ '<span>Uptime 30 días: <b>' + esc(up) + '</b></span></div>'
+				+ '<div class="stats">'
+				+ '<div class="stat"><span class="stat-num ' + level + '">' + esc(up) + '</span><span class="stat-label">Uptime · últimos 30 días</span></div>'
+				+ '<div class="stat"><span class="stat-num">' + esc(ms) + '</span><span class="stat-label">Tiempo de respuesta</span></div>'
+				+ '</div>'
 				+ '<div class="bars">' + bars + '</div>'
 				+ '<p class="legend">Últimos ' + total + ' chequeos (cada 5 min). Verde = operativo, rojo = caído.</p>'
 				+ '</div>';
 		});
 		document.getElementById('services').innerHTML = html;
+	}
+
+	function havanaDayKey(iso) {
+		try {
+			return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Havana', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
+		} catch (e) { return String(iso).slice(0, 10); }
+	}
+
+	function havanaDayLabel(date) {
+		try {
+			return date.toLocaleDateString('es-CU', { timeZone: 'America/Havana', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+		} catch (e) { return date.toISOString().slice(0, 10); }
+	}
+
+	function renderHistory(list) {
+		var box = document.getElementById('history');
+		var byDay = {};
+		(list || []).forEach(function (inc) {
+			if (!inc.started_at) return;
+			var k = havanaDayKey(inc.started_at);
+			(byDay[k] = byDay[k] || []).push(inc);
+		});
+		var html = '';
+		var now = new Date();
+		for (var d = 0; d < 14; d++) {
+			var day = new Date(now.getTime() - d * 86400000);
+			var key = havanaDayKey(day.toISOString());
+			var label = havanaDayLabel(day);
+			var incs = byDay[key] || [];
+			if (!incs.length) {
+				html += '<div class="day"><div class="day-head"><span class="day-dot ok"></span><span class="day-date">' + esc(label) + '</span></div>'
+					+ '<p class="day-ok">Sin incidentes registrados.</p></div>';
+			} else {
+				html += '<div class="day"><div class="day-head"><span class="day-dot down"></span><span class="day-date">' + esc(label) + '</span></div>';
+				incs.forEach(function (inc) {
+					var svc = (SERVICES.find(function (s) { return s.key === inc.service; }) || {}).label || inc.service;
+					var open = !inc.ended_at;
+					var dur = open ? 'en curso' : (inc.duration_minutes == null ? '' : inc.duration_minutes + ' min');
+					html += '<p class="day-inc"><b>' + esc(svc) + '</b> — ' + esc(inc.description || 'Incidente')
+						+ (dur ? ' <span class="when">· ' + esc(dur) + '</span>' : '') + '</p>';
+				});
+				html += '</div>';
+			}
+		}
+		box.innerHTML = html;
 	}
 
 	function renderIncidents(list) {
@@ -256,9 +323,10 @@
 			});
 		fetch('incidents.json?_=' + Date.now(), { cache: 'no-store' })
 			.then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-			.then(renderIncidents)
+			.then(function (list) { renderIncidents(list); renderHistory(list); })
 			.catch(function () {
 				document.getElementById('incidents').innerHTML = '<div class="empty">No se pudo cargar el historial de incidentes.</div>';
+				document.getElementById('history').innerHTML = '<div class="empty">No se pudo cargar el historial.</div>';
 			});
 	}
 
