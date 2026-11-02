@@ -1,0 +1,4 @@
+/status.json
+  Access-Control-Allow-Origin: *
+/incidents.json
+  Access-Control-Allow-Origin: *
