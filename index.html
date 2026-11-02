@@ -6,11 +6,14 @@
 <title>Estado de Tiendly</title>
 <meta name="description" content="Estado en vivo de los servicios de Tiendly: web, app y API.">
 <style>
+	@font-face { font-family: Inter; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter-var-latin.woff2) format('woff2'); }
 	* { margin: 0; padding: 0; box-sizing: border-box; }
 	html, body { background: #faf9f6; color: #111214; font-family: Inter, -apple-system, "Segoe UI", sans-serif; }
 	.wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
-	.brand { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #111214; }
-	.brand span { color: #20c45a; }
+	.site-header { background: #fff; border-bottom: 1px solid rgba(0,0,0,0.05); }
+	.site-header .header-inner { max-width: 1152px; margin: 0 auto; height: 56px; display: flex; align-items: center; padding: 0 20px; }
+	.site-header a { display: flex; align-items: center; }
+	.site-header img { height: 28px; width: auto; display: block; }
 	.banner { margin-top: 24px; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; gap: 14px; }
 	.banner .dot { width: 14px; height: 14px; border-radius: 999px; flex-shrink: 0; }
 	.banner h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.25; }
@@ -75,8 +78,8 @@
 </style>
 </head>
 <body>
+<header class="site-header"><div class="header-inner"><a href="https://www.tiendly.lat/" aria-label="Tiendly"><img src="tiendly-isotipo.svg" alt="Tiendly"></a></div></header>
 <div class="wrap">
-	<p class="brand">Tiendly<span>.</span></p>
 
 	<div id="banner" class="banner ok">
 		<span class="dot" aria-hidden="true"></span>
