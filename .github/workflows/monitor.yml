@@ -1,0 +1,36 @@
+name: Monitor de estado
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run monitor
+        run: python3 scripts/monitor.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "Tiendly Status"
+          git config user.email "status@tiendly.lat"
+          git add status.json incidents.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios, nada que commitear."
+          else
+            git commit -m "status: update $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

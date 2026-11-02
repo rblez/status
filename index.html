@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estado de Tiendly</title>
+<meta name="description" content="Estado en vivo de los servicios de Tiendly: web, app y API.">
+<style>
+	* { margin: 0; padding: 0; box-sizing: border-box; }
+	html, body { background: #faf9f6; color: #111214; font-family: Inter, -apple-system, "Segoe UI", sans-serif; }
+	.wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+	.brand { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #111214; }
+	.brand span { color: #20c45a; }
+	.banner { margin-top: 24px; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; gap: 14px; }
+	.banner .dot { width: 14px; height: 14px; border-radius: 999px; flex-shrink: 0; }
+	.banner h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.25; }
+	.banner p { font-size: 14px; margin-top: 2px; opacity: 0.85; }
+	.banner.ok { background: #dcfce7; }
+	.banner.ok .dot { background: #20c45a; }
+	.banner.ok h1 { color: #14532d; }
+	.banner.ok p { color: #166534; }
+	.banner.degraded { background: #fef9c3; }
+	.banner.degraded .dot { background: #eab308; }
+	.banner.degraded h1 { color: #713f12; }
+	.banner.degraded p { color: #854d0e; }
+	.banner.partial { background: #ffedd5; }
+	.banner.partial .dot { background: #f97316; }
+	.banner.partial h1 { color: #7c2d12; }
+	.banner.partial p { color: #9a3412; }
+	.banner.down { background: #fee2e2; }
+	.banner.down .dot { background: #ef4444; }
+	.banner.down h1 { color: #7f1d1d; }
+	.banner.down p { color: #991b1b; }
+	.updated { margin-top: 14px; font-size: 13px; color: #9ca3af; }
+	.updated .warn { color: #b45309; }
+	h2 { font-size: 15px; font-weight: 800; margin: 36px 0 12px; }
+	.card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 18px 20px; margin-bottom: 12px; }
+	.card .row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+	.card .name { font-size: 16px; font-weight: 700; }
+	.card .status { font-size: 13px; font-weight: 700; }
+	.card .status.ok { color: #16a34a; }
+	.card .status.slow { color: #ca8a04; }
+	.card .status.down { color: #dc2626; }
+	.card .meta { margin-top: 6px; font-size: 13px; color: #6b7280; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+	.card .meta b { color: #111214; font-weight: 700; }
+	.bars { display: grid; grid-template-columns: repeat(90, minmax(0, 1fr)); grid-auto-rows: 28px; gap: 2px; margin-top: 14px; }
+	.bars i { height: 28px; border-radius: 2px; display: block; min-width: 0; }
+	.bars i.ok { background: #20c45a; opacity: 0.85; }
+	.bars i.down { background: #ef4444; }
+	.bars i.nodata { background: #e5e7eb; }
+	.legend { margin-top: 8px; font-size: 12px; color: #9ca3af; }
+	.levels { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 18px 20px; }
+	.levels .level { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; }
+	.levels .level + .level { border-top: 1px solid rgba(0,0,0,0.05); }
+	.levels .dot { width: 12px; height: 12px; border-radius: 999px; flex-shrink: 0; margin-top: 3px; }
+	.levels .dot.green { background: #20c45a; }
+	.levels .dot.yellow { background: #eab308; }
+	.levels .dot.orange { background: #f97316; }
+	.levels .dot.red { background: #ef4444; }
+	.levels .lname { font-size: 14px; font-weight: 700; }
+	.levels .ldesc { font-size: 13px; color: #6b7280; margin-top: 1px; line-height: 1.5; }
+	.incident { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 16px 20px; margin-bottom: 10px; }
+	.incident.open { border-color: #fca5a5; background: #fef2f2; }
+	.incident .title { font-size: 14px; font-weight: 700; }
+	.incident .title .badge { display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 1px; }
+	.incident .title .badge.open { background: #ef4444; color: #fff; }
+	.incident .title .badge.closed { background: #e5e7eb; color: #4b5563; }
+	.incident .when { margin-top: 4px; font-size: 13px; color: #6b7280; }
+	.incident .desc { margin-top: 6px; font-size: 14px; color: #111214; }
+	.empty { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 20px; font-size: 14px; color: #6b7280; }
+	@media (max-width: 560px) {
+		.wrap { padding: 28px 16px 48px; }
+		.banner h1 { font-size: 18px; }
+	}
+</style>
+</head>
+<body>
+<div class="wrap">
+	<p class="brand">Tiendly<span>.</span></p>
+
+	<div id="banner" class="banner ok">
+		<span class="dot" aria-hidden="true"></span>
+		<div>
+			<h1 id="banner-title">Todos los sistemas operativos</h1>
+			<p id="banner-sub">Web, app y API funcionando con normalidad.</p>
+		</div>
+	</div>
+
+	<p class="updated" id="updated">Cargando estado…</p>
+
+	<h2>Servicios</h2>
+	<div id="services"></div>
+
+	<h2>Qué significa cada estado</h2>
+	<div class="levels">
+		<div class="level"><span class="dot green" aria-hidden="true"></span><div><p class="lname">Operativo</p><p class="ldesc">Todos los sistemas funcionan con normalidad.</p></div></div>
+		<div class="level"><span class="dot yellow" aria-hidden="true"></span><div><p class="lname">Rendimiento degradado</p><p class="ldesc">Los servicios responden, pero más lentos de lo normal (más de 2 segundos) o con errores parciales.</p></div></div>
+		<div class="level"><span class="dot orange" aria-hidden="true"></span><div><p class="lname">Interrupción parcial</p><p class="ldesc">Uno o más servicios están caídos, pero otros siguen funcionando.</p></div></div>
+		<div class="level"><span class="dot red" aria-hidden="true"></span><div><p class="lname">Interrupción mayor</p><p class="ldesc">Los servicios principales están caídos.</p></div></div>
+	</div>
+
+	<h2>Incidentes</h2>
+	<div id="incidents"></div>
+</div>
+
+<script>
+(function () {
+	var SERVICES = [
+		{ key: 'web', label: 'Web', url: 'https://www.tiendly.lat' },
+		{ key: 'app', label: 'App', url: 'https://app.tiendly.lat' },
+		{ key: 'api', label: 'API', url: 'https://www.tiendly.lat/api/health' }
+	];
+
+	function havana(iso) {
+		try {
+			return new Date(iso).toLocaleString('es-CU', {
+				timeZone: 'America/Havana',
+				day: '2-digit', month: 'short', year: 'numeric',
+				hour: '2-digit', minute: '2-digit', hour12: true
+			});
+		} catch (e) { return iso; }
+	}
+
+	function havanaShort(iso) {
+		try {
+			return new Date(iso).toLocaleString('es-CU', {
+				timeZone: 'America/Havana',
+				day: '2-digit', month: 'short',
+				hour: '2-digit', minute: '2-digit', hour12: true
+			});
+		} catch (e) { return iso; }
+	}
+
+	function esc(s) {
+		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+		});
+	}
+
+	function svcLevel(st) {
+		if (!st) return 'ok';
+		if (st.status) return st.status;
+		if (st.ok === false) return 'down';
+		if (st.response_ms != null && st.response_ms > 2000) return 'slow';
+		return 'ok';
+	}
+
+	function renderStatus(data) {
+		var services = data.services || {};
+		var history = data.history || {};
+		var uptime = data.uptime_30d || {};
+
+		var levels = SERVICES.map(function (s) { return svcLevel(services[s.key]); });
+		var downCount = levels.filter(function (l) { return l === 'down'; }).length;
+		var slowNames = SERVICES.filter(function (s, i) { return levels[i] === 'slow'; }).map(function (s) { return s.label; });
+		var downNames = SERVICES.filter(function (s, i) { return levels[i] === 'down'; }).map(function (s) { return s.label; });
+
+		var banner = document.getElementById('banner');
+		var title = document.getElementById('banner-title');
+		var sub = document.getElementById('banner-sub');
+		if (downCount === SERVICES.length) {
+			banner.className = 'banner down';
+			title.textContent = 'Interrupción mayor';
+			sub.textContent = 'Los servicios principales están caídos. Estamos trabajando en ello.';
+		} else if (downCount > 0) {
+			banner.className = 'banner partial';
+			title.textContent = 'Interrupción parcial';
+			sub.textContent = 'Caído ahora mismo: ' + downNames.join(', ') + '. El resto sigue funcionando.';
+		} else if (slowNames.length > 0) {
+			banner.className = 'banner degraded';
+			title.textContent = 'Rendimiento degradado';
+			sub.textContent = 'Respondiendo más lento de lo normal: ' + slowNames.join(', ') + '.';
+		} else {
+			banner.className = 'banner ok';
+			title.textContent = 'Todos los sistemas operativos';
+			sub.textContent = 'Web, app y API funcionando con normalidad.';
+		}
+
+		var updated = document.getElementById('updated');
+		updated.innerHTML = data.checked_at
+			? 'Última actualización: ' + esc(havana(data.checked_at)) + ' (hora de La Habana)'
+			: 'Sin datos todavía.';
+
+		var html = '';
+		SERVICES.forEach(function (s) {
+			var st = services[s.key] || {};
+			var level = svcLevel(st);
+			var label = level === 'ok' ? 'Operativo' : level === 'slow' ? 'Lento' : 'Caído';
+			var ms = (st.response_ms == null) ? '—' : st.response_ms + ' ms';
+			var up = (uptime[s.key] == null) ? '—' : uptime[s.key].toFixed(1) + '%';
+			var hist = history[s.key] || [];
+			var bars = '';
+			var total = 90;
+			for (var i = 0; i < total; i++) {
+				var v = hist[i - (total - hist.length)] ;
+				var cls = (v === true) ? 'ok' : (v === false) ? 'down' : 'nodata';
+				var tip = (v === true) ? 'Operativo' : (v === false) ? 'Caído' : 'Sin datos';
+				bars += '<i class="' + cls + '" title="' + tip + '"></i>';
+			}
+			html += '<div class="card">'
+				+ '<div class="row"><span class="name">' + esc(s.label) + '</span>'
+				+ '<span class="status ' + level + '">' + label + '</span></div>'
+				+ '<div class="meta"><span>Respuesta: <b>' + esc(ms) + '</b></span>'
+				+ '<span>Uptime 30 días: <b>' + esc(up) + '</b></span></div>'
+				+ '<div class="bars">' + bars + '</div>'
+				+ '<p class="legend">Últimos ' + total + ' chequeos (cada 5 min). Verde = operativo, rojo = caído.</p>'
+				+ '</div>';
+		});
+		document.getElementById('services').innerHTML = html;
+	}
+
+	function renderIncidents(list) {
+		var box = document.getElementById('incidents');
+		if (!list || !list.length) {
+			box.innerHTML = '<div class="empty">Sin incidentes registrados.</div>';
+			return;
+		}
+		var html = '';
+		list.forEach(function (inc) {
+			var svc = (SERVICES.find(function (s) { return s.key === inc.service; }) || {}).label || inc.service;
+			var open = !inc.ended_at;
+			var when = havanaShort(inc.started_at)
+				+ (open ? ' — en curso' : ' → ' + havanaShort(inc.ended_at));
+			var dur = open ? 'Duración: en curso'
+				: 'Duración: ' + (inc.duration_minutes == null ? '—' : inc.duration_minutes + ' min');
+			html += '<div class="incident' + (open ? ' open' : '') + '">'
+				+ '<p class="title">' + esc(svc)
+				+ '<span class="badge ' + (open ? 'open' : 'closed') + '">' + (open ? 'EN CURSO' : 'RESUELTO') + '</span></p>'
+				+ '<p class="when">' + esc(when) + ' · ' + esc(dur) + '</p>'
+				+ '<p class="desc">' + esc(inc.description || '') + '</p>'
+				+ '</div>';
+		});
+		box.innerHTML = html;
+	}
+
+	var lastGood = null;
+	function load() {
+		fetch('status.json?_=' + Date.now(), { cache: 'no-store' })
+			.then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+			.then(function (data) {
+				lastGood = data;
+				renderStatus(data);
+				document.getElementById('updated').classList.remove('warn');
+			})
+			.catch(function () {
+				var u = document.getElementById('updated');
+				if (lastGood) {
+					u.innerHTML = 'Última actualización: ' + esc(havana(lastGood.checked_at))
+						+ ' (hora de La Habana) · <span class="warn">No se pudo actualizar, mostrando el último estado.</span>';
+				} else {
+					u.innerHTML = '<span class="warn">No se pudo cargar el estado. Reintentando…</span>';
+				}
+			});
+		fetch('incidents.json?_=' + Date.now(), { cache: 'no-store' })
+			.then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+			.then(renderIncidents)
+			.catch(function () {
+				document.getElementById('incidents').innerHTML = '<div class="empty">No se pudo cargar el historial de incidentes.</div>';
+			});
+	}
+
+	load();
+	setInterval(load, 60000);
+})();
+</script>
+</body>
+</html>

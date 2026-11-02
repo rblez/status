@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-11-02T12:25:07Z",
+  "services": {
+    "web": {
+      "ok": true,
+      "response_ms": 462,
+      "status": "ok"
+    },
+    "app": {
+      "ok": true,
+      "response_ms": 1080,
+      "status": "ok"
+    },
+    "api": {
+      "ok": true,
+      "response_ms": 437,
+      "status": "ok"
+    }
+  },
+  "history": {
+    "web": [
+      true,
+      true
+    ],
+    "app": [
+      true,
+      true
+    ],
+    "api": [
+      true,
+      true
+    ]
+  },
+  "uptime_30d": {
+    "web": 100.0,
+    "app": 100.0,
+    "api": 100.0
+  },
+  "overall": "operational"
+}
