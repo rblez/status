@@ -95,7 +95,8 @@
 
 	.hist-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
 	.hist-toggle h2 { margin: 0; }
-	.hist-toggle .chev { font-size: 15px; color: #6b7280; transition: transform 0.2s ease; flex-shrink: 0; }
+	.hist-toggle .chev { display: flex; align-items: center; color: #6b7280; transition: transform 0.2s ease; flex-shrink: 0; }
+	.hist-toggle .chev svg { width: 18px; height: 18px; display: block; }
 	.hist-toggle.open .chev { transform: rotate(180deg); }
 	#history { overflow: hidden; }
 	#history.collapsed { display: none; }
@@ -129,7 +130,7 @@
 	<h2>Incidentes</h2>
 	<div id="incidents"></div>
 
-	<div class="hist-toggle" id="hist-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="history"><h2>Historial</h2><span class="chev" aria-hidden="true">▼</span></div>
+	<div class="hist-toggle" id="hist-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="history"><h2>Historial</h2><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div>
 	<div id="history" class="collapsed"></div>
 </div>
 
