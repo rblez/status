@@ -92,6 +92,13 @@
 		.banner h1 { font-size: 18px; }
 		.stat .stat-num { font-size: 24px; }
 	}
+
+	.hist-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+	.hist-toggle h2 { margin: 0; }
+	.hist-toggle .chev { font-size: 15px; color: #6b7280; transition: transform 0.2s ease; flex-shrink: 0; }
+	.hist-toggle.open .chev { transform: rotate(180deg); }
+	#history { overflow: hidden; }
+	#history.collapsed { display: none; }
 </style>
 </head>
 <body>
@@ -122,8 +129,8 @@
 	<h2>Incidentes</h2>
 	<div id="incidents"></div>
 
-	<h2>Historial</h2>
-	<div id="history"></div>
+	<div class="hist-toggle" id="hist-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="history"><h2>Historial</h2><span class="chev" aria-hidden="true">▼</span></div>
+	<div id="history" class="collapsed"></div>
 </div>
 
 <script>
@@ -337,6 +344,20 @@
 				document.getElementById('incidents').innerHTML = '<div class="empty">No se pudo cargar el historial de incidentes.</div>';
 				document.getElementById('history').innerHTML = '<div class="empty">No se pudo cargar el historial.</div>';
 			});
+	}
+
+
+	var histToggle = document.getElementById('hist-toggle');
+	var histBox = document.getElementById('history');
+	function setHist(open) {
+		if (!histToggle || !histBox) return;
+		histBox.classList.toggle('collapsed', !open);
+		histToggle.classList.toggle('open', open);
+		histToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+	}
+	if (histToggle) {
+		histToggle.addEventListener('click', function () { setHist(histBox.classList.contains('collapsed')); });
+		histToggle.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setHist(histBox.classList.contains('collapsed')); } });
 	}
 
 	load();
