@@ -2,9 +2,9 @@
   {
     "service": "web",
     "started_at": "2026-11-03T01:38:00Z",
-    "ended_at": null,
-    "duration_minutes": null,
-    "description": "Errores en el cobro del checkout: algunos pedidos se cobran sin aplicar el descuento del producto, la mensajería aparece como gratis y la dirección de entrega no llega al vendedor. El sitio sigue funcionando; estamos corrigiendo los cálculos."
+    "ended_at": "2026-11-03T02:42:52Z",
+    "duration_minutes": 64,
+    "description": "Errores en el cobro del checkout: algunos pedidos se cobraban sin aplicar el descuento del producto, la mensajería aparecía como gratis y la dirección de entrega no llegaba al vendedor. Corregido: los 36 hallazgos de la auditoría están arreglados y en vivo."
   },
   {
     "service": "app",
