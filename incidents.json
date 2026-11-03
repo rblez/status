@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "service": "web",
+    "started_at": "2026-11-03T01:38:00Z",
+    "ended_at": null,
+    "duration_minutes": null,
+    "description": "Errores en el cobro del checkout: algunos pedidos se cobran sin aplicar el descuento del producto, la mensajería aparece como gratis y la dirección de entrega no llega al vendedor. El sitio sigue funcionando; estamos corrigiendo los cálculos."
+  }
+]
