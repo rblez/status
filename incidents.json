@@ -5,5 +5,26 @@
     "ended_at": null,
     "duration_minutes": null,
     "description": "Errores en el cobro del checkout: algunos pedidos se cobran sin aplicar el descuento del producto, la mensajería aparece como gratis y la dirección de entrega no llega al vendedor. El sitio sigue funcionando; estamos corrigiendo los cálculos."
+  },
+  {
+    "service": "app",
+    "started_at": "2026-11-01T12:00:00Z",
+    "ended_at": null,
+    "duration_minutes": null,
+    "description": "Las notificaciones push de la APK no llegan: el pedido se crea pero el vendedor no recibe el aviso. El token se registra bien; el fallo está en el envío desde el servidor. En curso."
+  },
+  {
+    "service": "app",
+    "started_at": "2026-10-31T12:00:00Z",
+    "ended_at": "2026-10-31T22:00:00Z",
+    "duration_minutes": 600,
+    "description": "El login de la APK fallaba por una clave de Supabase vieja. Se corrigió la misma noche y el login volvió a funcionar."
+  },
+  {
+    "service": "web",
+    "started_at": "2026-10-22T12:00:00Z",
+    "ended_at": "2026-10-22T18:00:00Z",
+    "duration_minutes": 360,
+    "description": "El service worker viejo cacheaba código viejo y bloqueaba las actualizaciones; hubo que eliminarlo. Los usuarios veían la versión vieja del sitio hasta borrar los datos."
   }
 ]
