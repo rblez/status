@@ -34,6 +34,14 @@ CHECK_INTERVAL_MIN = 5    # workflow cadence, used to estimate uptime window
 SLOW_MS = 2000            # response above this = degraded performance
 
 
+def is_up(v):
+    """True si el chequeo cuenta como 'arriba' para uptime y barras.
+    Acepta el formato nuevo (str: 'ok'/'slow'/'down') y el viejo (bool)."""
+    if isinstance(v, bool):
+        return v
+    return v in ("ok", "slow")
+
+
 def service_status(ok, ms):
     """Per-service level: ok | slow | down."""
     if not ok:
@@ -129,13 +137,17 @@ def main():
         hist = status["history"].get(svc, [])
         if not isinstance(hist, list):
             hist = []
-        hist.append(bool(ok))
+        # Guardar el NIVEL ('ok'/'slow'/'down'), no solo un booleano:
+        # un servicio lento antes quedaba como True y la barrita salía verde
+        # aunque hubiera un incidente de rendimiento degradado.
+        hist.append(st)
         status["history"][svc] = hist[-MAX_HISTORY:]
 
         # Uptime over the last 30 days of checks.
+        # 'slow' sigue contando como arriba (responde, solo lento).
         recent = hist[-window:]
         if recent:
-            up = sum(1 for v in recent if v)
+            up = sum(1 for v in recent if is_up(v))
             status["uptime_30d"][svc] = round(100.0 * up / len(recent), 2)
         else:
             status["uptime_30d"][svc] = 100.0
