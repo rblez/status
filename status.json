@@ -1,19 +1,19 @@
 {
-  "checked_at": "2026-11-05T14:46:52Z",
+  "checked_at": "2026-11-05T14:48:35Z",
   "services": {
     "web": {
       "ok": true,
-      "response_ms": 217,
+      "response_ms": 466,
       "status": "ok"
     },
     "app": {
       "ok": true,
-      "response_ms": 2136,
-      "status": "slow"
+      "response_ms": 886,
+      "status": "ok"
     },
     "api": {
       "ok": true,
-      "response_ms": 294,
+      "response_ms": 302,
       "status": "ok"
     }
   },
@@ -31,6 +31,7 @@
       true,
       true,
       true,
+      "ok",
       "ok",
       "ok",
       "ok",
@@ -58,7 +59,8 @@
       "ok",
       "ok",
       "ok",
-      "slow"
+      "slow",
+      "ok"
     ],
     "api": [
       true,
@@ -79,6 +81,7 @@
       "ok",
       "ok",
       "ok",
+      "ok",
       "ok"
     ]
   },
@@ -87,5 +90,5 @@
     "app": 100.0,
     "api": 100.0
   },
-  "overall": "degraded"
+  "overall": "operational"
 }
