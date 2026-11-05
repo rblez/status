@@ -1,19 +1,19 @@
 {
-  "checked_at": "2026-11-05T22:35:43Z",
+  "checked_at": "2026-11-05T22:40:38Z",
   "services": {
     "web": {
       "ok": true,
-      "response_ms": 408,
+      "response_ms": 386,
       "status": "ok"
     },
     "app": {
       "ok": true,
-      "response_ms": 585,
+      "response_ms": 233,
       "status": "ok"
     },
     "api": {
       "ok": true,
-      "response_ms": 641,
+      "response_ms": 87,
       "status": "ok"
     }
   },
