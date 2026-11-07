@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-07T09:55:37Z",
+  "checked_at": "2026-11-07T10:00:36Z",
   "services": {
     "web": {
       "ok": true,
@@ -8,12 +8,12 @@
     },
     "app": {
       "ok": true,
-      "response_ms": 245,
+      "response_ms": 192,
       "status": "ok"
     },
     "api": {
       "ok": true,
-      "response_ms": 262,
+      "response_ms": 55,
       "status": "ok"
     }
   },
